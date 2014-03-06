@@ -1,4 +1,4 @@
-; (ns fux.fux)
+(ns fux.fux)
 (require '[overtone.live :as ot])
 
 ; simple overtone instrument with fixed params
@@ -22,8 +22,6 @@
       (equaltemp
         (* a (.pow 2.0 (/ 1.0 12.0)
         acc)))))
-
-
 
 
 (defn playall
