@@ -1,3 +1,6 @@
+(ns fux.fux
+(:require [overtone.live :as ot]))
+
 ;------------------------------------
 ; returns a list of all available frequencies in equal temperent. 440.0 hz tuning note
 ;------------------------------------
@@ -32,7 +35,6 @@
 ; simple overtone instruments with fixed params except for note/freq
 ;------------------------------------
 
-(require '[overtone.live :as ot])
 
 ; takes a note value and maps it to my frequency list to get frequency
 (ot/definst freq [freq 261.625 amp 0.6]
