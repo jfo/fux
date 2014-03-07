@@ -24,17 +24,15 @@
 (equaltemp)
 
 ; addressing by index:
-((equaltemp) 60)
-
-(type (equaltemp))
-(equaltemp)
-
-(ot/midi->hz 60)
 ((equaltemp) 51)
+(ot/midi->hz 60)
+
+(equaltemp)
+(type (equaltemp))
+
 ;------------------------------------
 ; simple overtone instruments with fixed params except for note/freq
 ;------------------------------------
-
 
 ; takes a note value and maps it to my frequency list to get frequency
 (ot/definst freq [freq 261.625 amp 0.6]
@@ -46,33 +44,45 @@
 ; takes a midi note value and produces a freq from it
 (ot/definst midi [note 60 amp 0.6]
    (let [freq (ot/midicps note)]
+      (println freq)
       (* amp
           (ot/env-gen (ot/perc 0.1 2) 1 1 0 1 :action ot/FREE)
           (+ (ot/sin-osc (/ freq 1)))
  )))
 
+; takes a note value and maps it to my frequency list to get frequency,
+; then sends that along to the freq instrument that has been defined
 
-; takes a note value and maps it to my frequency list to get frequency
 (ot/definst tinn [note 60 amp 0.6]
-   (let [freq ((equaltemp) 51)] ;this wont take note as an index, most likely because the ot source is doing something to it?
+  ; (println (int (:value note)))
+   (let [freq ((equaltemp) (int(:value note)))]
+      (println freq)
       (* amp
           (ot/env-gen (ot/perc 0.1 2) 1 1 0 1 :action ot/FREE)
           (+ (ot/sin-osc (/ freq 1)))
  )))
 
+; (defn tinn
+;   ([] (tinn 60))
+;   ([note]
+;     (freq ((equaltemp) (- note 9)))))
 
+
+(tinn 60)
+(midi 70)
 (freq)
-(midi 60)
-(tinn)
 
+(midi 66)
+(freq 440)
+(tinn 69)
 
 ;------------------------------------
 ; plays notes from a vector in sequence
 ;------------------------------------
 
-; (defn rand-harmonize [x]
-;     (rand-nth (vector (+ x 7) (+ x 12) (+ x 4)))
-;   )
+(defn rand-harmonize [x]
+    (rand-nth (vector (+ x 7) (+ x 12) (+ x 4)))
+  )
 
 
 (defn playall
@@ -81,7 +91,7 @@
   ([inc notes]
     (map (fn [time note]
            (ot/at (+ (ot/now) time)
-             ; (hum (rand-harmonize note))
+             (midi (rand-harmonize note))
              (midi note)))
          (range 0 (* inc (count notes)) inc)
          notes)))
