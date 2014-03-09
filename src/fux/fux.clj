@@ -6,12 +6,55 @@
 ;------------------------------------
 
 ; is it appropriate to hold this helper function outside of the only place it is being called?
+
 (defn lower [note]
   (if (< note 20.0)
     note
     (lower (/ note 2))))
 
-; testing multiple dispatch - is it necessary to explicitely do all three?
+; pythagorean tuning.
+(defn pythagorean-up
+  ([] (pythagorean-up 440.0 (vector)))
+  ([a] (pythagorean-up a (vector)))
+  ([a acc]
+  (if (< 5 (count acc))
+    (reverse acc)
+      (pythagorean-up (* 3/2 a) (cons a acc)))))
+
+(defn pythagorean-down
+  ([] (pythagorean-down 440.0 (vector)))
+  ([a] (pythagorean-down a (vector)))
+  ([a acc]
+  (if (< 6 (count acc))
+    (reverse (rest (reverse acc)))
+      (pythagorean-down (* 2/3 a) (cons a acc)))))
+
+(defn pythagorean
+  ([] (pythagorean 440.0 (vector)))
+  ([a acc]
+    (flatten (cons (pythagorean-down a) (cons (pythagorean-up a) acc)))))
+
+(defn expand
+  ([start] (expand (lower start) (vector)))
+  ([start acc]
+    (if (< start 20000)
+      (expand (* 2 start) (cons start acc))
+      (reverse acc))))
+
+(expand 440.0)
+(lower 440.0)
+
+(def pythags (flatten (vector (sort (flatten (map expand (pythagorean)))))))
+(def notes ["Eb" "Bb" "F" "C" "G" "D" "A" "E" "B" "F#" "C#" "G#"])
+(zipmap notes (pythagorean))
+
+
+(type pythags) 
+;------------------------------------
+; equal temperment
+;------------------------------------
+
+
 (defn equaltemp
   ([] (equaltemp (lower 440.0) (vector)))
   ([a] (equaltemp (lower a) (vector)))
@@ -20,13 +63,10 @@
     (vec(reverse acc))
     (equaltemp (* a (Math/pow 2.0 (/ 1.0 12.0))) (cons a acc)))))
 
-
 (equaltemp)
-
 ; addressing by index:
 ((equaltemp) 51)
 (ot/midi->hz 60)
-
 (equaltemp)
 (type (equaltemp))
 
@@ -44,7 +84,6 @@
 ; takes a midi note value and produces a freq from it
 (ot/definst midi [note 60 amp 0.6]
    (let [freq (ot/midicps note)]
-      (println freq)
       (* amp
           (ot/env-gen (ot/perc 0.1 2) 1 1 0 1 :action ot/FREE)
           (+ (ot/sin-osc (/ freq 1)))
@@ -55,17 +94,11 @@
 
 (ot/definst tinn [note 60 amp 0.6]
   ; (println (int (:value note)))
-   (let [freq ((equaltemp) (int(:value note)))]
-      (println freq)
+   (let [freq ((equaltemp) (- (int(:value note)) 9))]
       (* amp
           (ot/env-gen (ot/perc 0.1 2) 1 1 0 1 :action ot/FREE)
           (+ (ot/sin-osc (/ freq 1)))
  )))
-
-; (defn tinn
-;   ([] (tinn 60))
-;   ([note]
-;     (freq ((equaltemp) (- note 9)))))
 
 
 (tinn 60)
@@ -91,7 +124,7 @@
   ([inc notes]
     (map (fn [time note]
            (ot/at (+ (ot/now) time)
-             (midi (rand-harmonize note))
+             ; (midi (rand-harmonize note))
              (midi note)))
          (range 0 (* inc (count notes)) inc)
          notes)))
@@ -101,8 +134,24 @@
 (def cf [60 67 72 75 63])
 (def cf [60 61 62 62])
 
+(type cf)
 (playall cf)
 
+(defn playallfreq
+  ([notes]
+    (playallfreq 300 notes))
+  ([inc notes]
+    (map (fn [time note]
+           (ot/at (+ (ot/now) time)
+             (freq note)))
+         (range 0 (* inc (count notes)) inc)
+         notes)))
+
+(type pythags)
+
+(playallfreq pythags)
+(playallfreq (equaltemp))
+(ot/stop)
 
 (defn play [last current]
   (hum last)
