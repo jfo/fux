@@ -49,7 +49,7 @@
 (zipmap notes (pythagorean))
 
 
-(type pythags) 
+(type pythags)
 ;------------------------------------
 ; equal temperment
 ;------------------------------------
@@ -82,7 +82,7 @@
  ))
 
 ; takes a midi note value and produces a freq from it
-(ot/definst midi [note 60 amp 0.6]
+(ot/definst midi [note 60 amp 0.3]
    (let [freq (ot/midicps note)]
       (* amp
           (ot/env-gen (ot/perc 0.1 2) 1 1 0 1 :action ot/FREE)
@@ -117,25 +117,69 @@
     (rand-nth (vector (+ x 7) (+ x 12) (+ x 4)))
   )
 
+(defn playvec [item]
+  (if (= java.lang.Long (type item))
+    (midi coll)
+    (for [x coll]
+      (midi x))))
+
+(println  (playall cf))
+
+;------------------------------------
+; andrea's help
+;------------------------------------
+
+(defn schedule
+  ([notes]
+    (printstuff 300 notes))
+  ([incr notes]
+    (map (fn [timing note]
+          [timing note])
+           (range 0 (* incr (count notes)) incr)
+           notes)))
+
+(for [item (printstuff cf)]
+      (flatten item))
+
+(defn foo [[timing notes]]
+  (if (= java.lang.Long (type notes))
+    (list [timing notes])
+    (for [x notes]
+      [timing x])))
+
+(println cf)
+(schedule cf)
+
+
+(defn playsched [[time note]]
+     (ot/at (+ (ot/now) time)
+            (midi note)))
+
+(defn playeverything [notes]
+  (map playsched (apply concat (map foo (schedule notes)))))
+
+(playeverything cf)
+
+;------------------------------------
 
 (defn playall
   ([notes]
-    (playall 900 notes))
+    (playall 400 notes))
   ([inc notes]
     (map (fn [time note]
            (ot/at (+ (ot/now) time)
-             ; (midi (rand-harmonize note))
-             (midi note)))
+             (playvec note)))
          (range 0 (* inc (count notes)) inc)
          notes)))
 
-(def cf [62 65 64 62 67 65 69 67 65 64 62])
+(playall cf)
+
+(def cf [62 65 [64 62] 67 65 69 67 65 64 62])
 (def cf [60 64 62 60 65 64 67 65 64 62 60])
 (def cf [60 67 72 75 63])
 (def cf [60 61 62 62])
 
 (type cf)
-(playall cf)
 
 (defn playallfreq
   ([notes]
