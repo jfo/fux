@@ -1,7 +1,5 @@
-(ns fux.read
-  (:require [clojure.java.io :as io])
-  (:use fux.fux))
-
+(ns fux.hdparser
+  (:require [clojure.java.io :as io]))
 
 (def kern
   (with-open [rdr (io/reader "/Users/jeff/code/fux/resources/bach-chorales/001.krn")]
@@ -12,8 +10,6 @@
          (map #(clojure.string/split % #"\t"))
          (into []))))
 
-(playeverything (vec (for [x (numberer (noter kern))] (vec x))))
-(println kern)
 
 (defn noter [coll]
   (map
@@ -21,44 +17,6 @@
           :let [y (re-seq #"[A-Ga-g#-]" x)]]
           (clojure.string/join y))
      coll))
-
-(noter kern)
-
-(defn numberer [coll]
-  (map
-    #(for [x %
-           :let [y (note-map x)]]
-           y)
-      coll))
-
-(numberer (noter kern))
-
-
-(playall (map first (numberer (noter kern))))
-(playall (map last (numberer (noter kern))))
-
-
-(vec (for [x (numberer (noter kern))] (vec x)))
-
-; THIS ONE
-(playeverything (vec (for [x (numberer (noter kern))] (vec x))))
-
-(playeverything cf)
-
-(play)
-
-(defn food []
-  (println "hi")
-  (println "howdy"))
-
-(food)
-
-
-
-
-
-
-(playall [60])
 
 
 (def note-map {
@@ -135,5 +93,10 @@
               "bb" 83
               "ccc" 83})
 
-(println note-map)
 
+(defn numberer [coll]
+  (map
+    #(for [x %
+           :let [y (note-map x)]]
+           y)
+      coll))
