@@ -1,6 +1,5 @@
 (ns fux.fux
-(:require [overtone.live :as ot]))
-
+  (:require [overtone.live :as ot]))
 ;------------------------------------
 ; returns a list of all available frequencies in equal temperent. 440.0 hz tuning note
 ;------------------------------------
@@ -44,12 +43,13 @@
 (expand 440.0)
 (lower 440.0)
 
-(def pythags (flatten (vector (sort (flatten (map expand (pythagorean)))))))
+(def pythags (vec (flatten (vector (sort (flatten (map expand (pythagorean))))))))
 (def notes ["Eb" "Bb" "F" "C" "G" "D" "A" "E" "B" "F#" "C#" "G#"])
 (zipmap notes (pythagorean))
 
-
 (type pythags)
+(println pythags)
+
 ;------------------------------------
 ; equal temperment
 ;------------------------------------
@@ -84,24 +84,21 @@
 ; takes a midi note value and produces a freq from it
 (ot/definst midi [note 60 amp 0.3]
    (let [freq (ot/midicps note)]
+     (println freq)
       (* amp
-          (ot/env-gen (ot/perc 0.1 2) 1 1 0 1 :action ot/FREE)
+          (ot/env-gen (ot/perc 0.1 2) 10 1 0 1 :action ot/FREE)
           (+ (ot/sin-osc (/ freq 1)))
  )))
 
 ; takes a note value and maps it to my frequency list to get frequency,
 ; then sends that along to the freq instrument that has been defined
 
-(ot/definst tinn [note 60 amp 0.6]
-  ; (println (int (:value note)))
-   (let [freq ((equaltemp) (- (int(:value note)) 9))]
-      (* amp
-          (ot/env-gen (ot/perc 0.1 2) 1 1 0 1 :action ot/FREE)
-          (+ (ot/sin-osc (/ freq 1)))
- )))
+(defn tinn [note]
+  (freq (pythags note )))
 
+((equaltemp) 150)
 
-(tinn 60)
+(tinn 70)
 (midi 70)
 (freq)
 
@@ -131,14 +128,14 @@
 
 (defn schedule
   ([notes]
-    (printstuff 300 notes))
+    (schedule 600 notes))
   ([incr notes]
     (map (fn [timing note]
           [timing note])
            (range 0 (* incr (count notes)) incr)
            notes)))
 
-(for [item (printstuff cf)]
+(for [item (schedule cf)]
       (flatten item))
 
 (defn foo [[timing notes]]
@@ -153,7 +150,7 @@
 
 (defn playsched [[time note]]
      (ot/at (+ (ot/now) time)
-            (midi note)))
+            (tinn note)))
 
 (defn playeverything [notes]
   (map playsched (apply concat (map foo (schedule notes)))))
