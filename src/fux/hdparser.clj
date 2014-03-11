@@ -2,7 +2,7 @@
   (:require [clojure.java.io :as io]))
 
 (def kern
-  (with-open [rdr (io/reader "/Users/jeff/code/fux/resources/bach-chorales/001.krn")]
+  (with-open [rdr (io/reader "/Users/jeff/code/fux/resources/bach-chorales/017.krn")]
     (->> (line-seq rdr)
          (remove #(= \! (first %)))
          (remove #(= \* (first %)))

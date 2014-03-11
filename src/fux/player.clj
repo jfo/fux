@@ -9,11 +9,18 @@
 
 ; takes a note value and maps it to my frequency list to get frequency
 
-(ot/definst freq [freq 261.625 amp 0.6]
+(ot/definst freq [freq 261.625 amp 0.1]
       (* amp
-          (ot/env-gen (ot/perc 0.1 2) 1 1 0 1 :action ot/FREE)
+          (ot/env-gen
+            :envelope 80
+            :gate 50
+            :level-scale 100
+            :level-bias 20
+            :time-scale 50
+            :action ot/FREE)
           (+ (ot/sin-osc (/ freq 1)))
  ))
+(ot/stop)
 
 ; takes a midi note value and produces a freq from it
 (ot/definst midi [note 60 amp 0.3]

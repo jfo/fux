@@ -12,5 +12,8 @@
 (p/noter p/kern)
 (p/numberer (p/noter p/kern))
 
+(ot/stop)
+(println p/kern)
+(player/playeverything [[67]])
 (player/playeverything (vec (for [x (p/numberer (p/noter p/kern))] (vec x))))
 
