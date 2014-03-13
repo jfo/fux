@@ -1,45 +1,4 @@
-(ns fux.parser)
-; ==============
-; comments extractor
-; ==============
-
-(defn extract-comments [kern]
-  (remove #(not= \! (first %)) kern))
-
-; ==============
-; spines extractor
-; ==============
-
-(defn strip-comments [kern]
-  (remove #(= \! (first %)) kern))
-
-(defn split-spines [kern]
-  (let [vectors (strip-comments kern)]
-    (map #(clojure.string/split % #"\t") vectors)))
-
-(defn tokenize-spine [spines]
-    (for [ i spines ]
-      (first i)))
-
-(defn extract-spines [spines]
-; (list (remove #(= "." %) (flatten 
-  (loop [spines (split-spines spines)
-         acc (vector)]
-      (if (empty? (flatten spines))
-        acc
-        ; (conj (tokenize-spine spines) acc))))
-        (recur (map rest spines) (conj acc (tokenize-spine spines))))))
-; ))
-
-; ==============
-; spines parser
-; ==============
-
-(defn extract-spine-comments [spine]
-  (remove #(not= \* (first %)) spine))
-
-(defn strip-spine-comments [spine]
-  (remove #(= \* (first %)) spine))
+(ns fux.spinetokenparser)
 
 (def note-map {
                "." 0 nil 0
@@ -134,25 +93,3 @@
           :note (note token)
           :notecode (note-map (note token))}
          token))))
-
-(defn chunk-spine [spine]
-  {:comments (extract-spine-comments spine)
-   :notes (spine-noter (strip-spine-comments spine))})
-
-(defn chunk-all-spines [kern]
-  (loop [spines (extract-spines kern)
-         acc [] ]
-    (if (empty? spines)
-      acc
-      (recur (rest spines) (conj acc (chunk-spine (first spines)))))))
-
-; ==============
-; kern parser
-; ==============
-
-(defn parse-kern [kern]
-  {:global-comments (extract-comments kern)
-   :spines (map chunk-spine (extract-spines kern))})
-
-
-
