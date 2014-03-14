@@ -1,7 +1,9 @@
 (ns fux.core
   (:require
+            [overtone.live :as ot]
             [fux.parser :as p]
             [fux.scheduler :as sched]
+            [fux.player :as play]
             [fux.spinetokenparser :as s]
             [fux.tuners :as tuner]
             [clojure.java.io :as io]))
@@ -24,56 +26,35 @@
 (p/tokenize-spine (p/split-spines kern))
 
 
+(pprint (map #(add-offset (% :notes)) (map p/chunk-spine (p/extract-spines kern))))
 (pprint (p/add-offset (map p/chunk-spine (p/extract-spines kern))))
 
-(pprint (map p/chunk-spine (p/extract-spines kern)))
 
 (remove #(= "." %) (flatten (p/extract-spines kern)))
 
-(pprint (p/parse-kern kern))
 
+
+
+(pprint (p/parse-kern kern))
 
 (def parsed (p/parse-kern kern))
 
-(def test-spine
-  (remove #(= \= (first %))
-  ((first (parsed :spines)) :notes)))
 
+(def test-spine (first (parsed :spines)))
 (pprint test-spine)
 
-
-(defn add-offset [spine]
-    (rest (reverse (reduce (fn [acc note]
-       (conj acc
-         (assoc note
-            :offset (+ (note :duration)
-                       ((first acc) :offset)))))
-        '({:offset 0 :duration 0})
-        spine))))
-
-(pprint (add-offset test-spine))
-
-(pprint test-spine)
-
-(pprint (map add-offset (parsed :spines)))
-(pprint ((first (parsed :spines)) :notes))
-(add-offset ((first (parsed :spines)) :notes))
+(defn schedule-spine
+  ([spine] (schedule-spine spine 100))
+  ([spine mm]
+   (map #((ot/at (+ (ot/now) 1000) (play/midi (% :notecode)))) spine)))
 
 
-(reduce (fn [acc x]
-          (conj acc (+ x (last acc))))
-        [1]
-        [2 3 4 5])
-
-(reduce + [0 1])
+(schedule-spine test-spine)
 
 
-(reduce #(% :duration) test-spine)
-
-(map (fn[m] {:notecode (m :notecode)}) test-spine)
 
 
-(schedule test-spine 100)
+
 
 
 

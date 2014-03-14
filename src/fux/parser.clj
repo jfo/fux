@@ -126,12 +126,21 @@
       (* 6 (/ 1 (read-string duration)))
       (* 4 (/ 1 (float (read-string duration)))))))
 
+(defn add-offset [spine]
+    (rest (reverse (reduce (fn [acc note]
+       (conj acc
+         (assoc note
+            :offset (+ ((first acc) :duration)
+                       ((first acc) :offset)))))
+        '({:offset 0 :duration 0})
+        spine))))
 
 (defn note [token]
   (if (= \= (first token))
     nil
     (do
       (clojure.string/join (re-seq #"[A-Ga-g#-]" token)))))
+
 
 (defn spine-noter [tokens]
    (into []
@@ -153,16 +162,6 @@
       acc
       (recur (rest spines) (conj acc (chunk-spine (first spines)))))))
 
-a (defn add-offset [spine]
-;   (rest (reverse
-;     (reduce (fn [acc note]
-;               (if (not= "." (note :duration))
-;                (conj acc
-;                  (assoc note
-;                     :offset (+ (/ 1 (read-string (* 4 (note :duration))))
-;                        ((first acc) :offset))))))
-;             '({:offset 0 :duration 0})
-;             spine))))
 
 ; ==============
 ; kern parser
@@ -170,6 +169,6 @@ a (defn add-offset [spine]
 
 (defn parse-kern [kern]
   {:global-comments (extract-comments kern)
-   :spines (map chunk-spine (extract-spines kern))})
+   :spines (map #(add-offset (% :notes))(map chunk-spine (extract-spines kern)))})
 
 
