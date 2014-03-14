@@ -22,7 +22,7 @@
       (first i)))
 
 (defn extract-spines [spines]
-; (list (remove #(= "." %) (flatten 
+; (list (remove #(= "." %) (flatten
   (loop [spines (split-spines spines)
          acc (vector)]
       (if (empty? (flatten spines))
@@ -40,6 +40,12 @@
 
 (defn strip-spine-comments [spine]
   (remove #(= \* (first %)) spine))
+
+(defn remove-null [spine]
+  (remove #(= \. (first %)) spine))
+
+(defn remove-measure [spine]
+  (remove #(= \= (first %)) spine))
 
 (def note-map {
                "." 0 nil 0
@@ -115,10 +121,11 @@
               "ccc" 83})
 
 (defn duration [token]
-  (if (= \= (first token))
-    nil
-    (do
-      (clojure.string/join (re-seq #"[0-9.]" token)))))
+  (let [duration (clojure.string/join (re-seq #"[0-9.]" token))]
+    (if (= \. (last duration))
+      (* 6 (/ 1 (read-string duration)))
+      (* 4 (/ 1 (float (read-string duration)))))))
+
 
 (defn note [token]
   (if (= \= (first token))
@@ -137,7 +144,7 @@
 
 (defn chunk-spine [spine]
   {:comments (extract-spine-comments spine)
-   :notes (spine-noter (strip-spine-comments spine))})
+   :notes (spine-noter (remove-measure (remove-null (strip-spine-comments spine))))})
 
 (defn chunk-all-spines [kern]
   (loop [spines (extract-spines kern)
@@ -146,6 +153,17 @@
       acc
       (recur (rest spines) (conj acc (chunk-spine (first spines)))))))
 
+a (defn add-offset [spine]
+;   (rest (reverse
+;     (reduce (fn [acc note]
+;               (if (not= "." (note :duration))
+;                (conj acc
+;                  (assoc note
+;                     :offset (+ (/ 1 (read-string (* 4 (note :duration))))
+;                        ((first acc) :offset))))))
+;             '({:offset 0 :duration 0})
+;             spine))))
+
 ; ==============
 ; kern parser
 ; ==============
@@ -153,6 +171,5 @@
 (defn parse-kern [kern]
   {:global-comments (extract-comments kern)
    :spines (map chunk-spine (extract-spines kern))})
-
 
 

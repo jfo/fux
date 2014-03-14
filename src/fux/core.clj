@@ -23,18 +23,17 @@
 (p/split-spines kern)
 (p/tokenize-spine (p/split-spines kern))
 
-(pprint (p/extract-spines kern))
+
+(pprint (p/add-offset (map p/chunk-spine (p/extract-spines kern))))
+
 (pprint (map p/chunk-spine (p/extract-spines kern)))
 
-
 (remove #(= "." %) (flatten (p/extract-spines kern)))
-(p/extract-spines kern)
 
-(p/parse-kern kern)
+(pprint (p/parse-kern kern))
+
 
 (def parsed (p/parse-kern kern))
-
-(pprint parsed)
 
 (def test-spine
   (remove #(= \= (first %))
@@ -42,20 +41,23 @@
 
 (pprint test-spine)
 
+
 (defn add-offset [spine]
-  (rest (reverse
-    (reduce (fn [acc note]
+    (rest (reverse (reduce (fn [acc note]
        (conj acc
          (assoc note
-            :offset (+ (/ 1 (read-string (note :duration)))
+            :offset (+ (note :duration)
                        ((first acc) :offset)))))
         '({:offset 0 :duration 0})
         spine))))
 
-(read-string "0")
-
 (pprint (add-offset test-spine))
 
+(pprint test-spine)
+
+(pprint (map add-offset (parsed :spines)))
+(pprint ((first (parsed :spines)) :notes))
+(add-offset ((first (parsed :spines)) :notes))
 
 
 (reduce (fn [acc x]
