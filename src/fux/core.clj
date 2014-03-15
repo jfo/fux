@@ -11,7 +11,7 @@
 (use 'clojure.pprint)
 
 (def kern
-  (with-open [rdr (io/reader "/Users/jeff/code/fux/resources/bach-chorales/017.krn")]
+  (with-open [rdr (io/reader "/Users/jeff/code/fux/resources/bach-chorales/009.krn")]
     (->> (line-seq rdr)
          (into [] ))))
 
@@ -23,7 +23,7 @@
 (p/extract-comments kern)
 (p/strip-comments kern)
 (p/split-spines kern)
-(p/tokenize-spine (p/split-spines kern))
+  (p/tokenize-spine (p/split-spines kern))
 
 (pprint (p/parse-kern kern))
 
@@ -31,28 +31,25 @@
 (defn schedule-note
   ([offset] (schedule-note offset 100))
   ([offset, mm]
-    (* offset (float (/ 1000 (/ 100 60))))))
+    (* offset (float (/ 1000 (/ mm 60))))))
 
 ; plays note immediately
 (ot/definst midi [note 60 amp 0.3]
    (let [freq (ot/midicps note)]
       (* amp
-          (ot/env-gen (ot/perc 0.1 2) 10 1 0 1 :action ot/FREE)
+          (ot/env-gen (ot/perc 0.2 0.2) 1 0.1 0 1 :action ot/FREE)
           (+ (ot/sin-osc (/ freq 1))))))
+
+(midi)
 
 (defn playsched [note offset]
      (ot/at (+ (ot/now) offset)
             (midi note)))
 
+
 ; now I just need to apply that to all the notes in a spine.
 (defn schedule-spine [spine]
   (map #(playsched (% :notecode) (schedule-note (% :offset))) spine))
-
-
-(pprint test-spine)
-
-(test-note :offset)
-(playsched (test-note :notecode)(schedule-note (test-note :offset)))
 
 
 ;this one!!!
