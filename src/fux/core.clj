@@ -11,21 +11,43 @@
 (use 'clojure.pprint)
 
 (def kern
-  (with-open [rdr (io/reader "/Users/jeff/code/fux/resources/bach-chorales/009.krn")]
+  (with-open [rdr (io/reader "/Users/jeff/code/fux/resources/bach-chorales/249.krn")]
     (->> (line-seq rdr)
          (into [] ))))
 
-(print kern)
+; (print kern)
+; (doseq [i kern]
+;   (println i))
+; (p/extract-comments kern)
+; (p/strip-comments kern)
+; (p/split-spines kern)
+; (p/tokenize-spine (p/split-spines kern))
+; (pprint (p/parse-kern kern))
 
-(doseq [i kern]
-  (println i))
+(pprint tuner/pythags)
+(tuner/equaltemp)
 
-(p/extract-comments kern)
-(p/strip-comments kern)
-(p/split-spines kern)
-  (p/tokenize-spine (p/split-spines kern))
 
-(pprint (p/parse-kern kern))
+(ot/definst sin-wave [freq 440 attack 0.1 sustain 0.1 release 0.5 vol 0.5] 
+  (* (ot/env-gen (ot/lin attack sustain release) 1 1 0 1 ot/FREE)
+     (ot/sin-osc freq)
+     vol))
+
+(ot/definst square-wave [freq 440 attack 0.01 sustain 0.4 release 0.1 vol 0.4] 
+  (* (ot/env-gen (ot/lin attack sustain release) 1 1 0 1 ot/FREE)
+     (ot/lf-pulse:ar freq)
+     vol))
+
+(sin-wave)
+(ot/stop)
+
+; plays note immediately
+; (ot/definst midi [note 60 amp 0.3]
+;    (let [freq (ot/midicps note)]
+;       (* amp
+;           (ot/env-gen (ot/perc 0.2 0.2) 1 1 0 1 :action ot/FREE)
+;           (+ (ot/sin-osc (/ freq 1))))))
+
 
 ; now i need a function that, given a metronome marking and an amount of note offset (quarter note = 1) defines an absolute time
 (defn schedule-note
@@ -33,40 +55,30 @@
   ([offset, mm]
     (* offset (float (/ 1000 (/ mm 60))))))
 
-; plays note immediately
-(ot/definst midi [note 60 amp 0.3]
-   (let [freq (ot/midicps note)]
-      (* amp
-          (ot/env-gen (ot/perc 0.2 0.2) 1 0.1 0 1 :action ot/FREE)
-          (+ (ot/sin-osc (/ freq 1))))))
 
-(midi)
+(defn playsched [note offset start]
+     (ot/at (+ start offset)
+            (square-wave (tuner/pythags note))))
 
-(defn playsched [note offset]
-     (ot/at (+ (ot/now) offset)
-            (midi note)))
-
+; (playsched 60 1000)
 
 ; now I just need to apply that to all the notes in a spine.
-(defn schedule-spine [spine]
-  (map #(playsched (% :notecode) (schedule-note (% :offset))) spine))
+(defn schedule-spine [spine now]
+  (map #(playsched (% :notecode) (schedule-note (% :offset)) now) spine))
+
+
+; (def test-spine (first ((p/parse-kern kern) :spines)))
+; (schedule-spine test-spine)
+; (def test-note (nth (first ((p/parse-kern kern) :spines)) 5))
+; (schedule-note 5.0)
 
 
 ;this one!!!
-(map schedule-spine ((p/parse-kern kern) :spines))
+(defn play-kern [kern]
+  (map #(schedule-spine % (ot/now)) (kern :spines)))
 ;this one!!!
 
-(schedule-spine test-spine)
-
-(def test-spine (first ((p/parse-kern kern) :spines)))
-(def test-note (nth (first ((p/parse-kern kern) :spines)) 5))
-
-(midi)
-(schedule-note 5.0)
-(playsched 60 1000)
-
-
-
+(play-kern (p/parse-kern kern))
 
 
 
