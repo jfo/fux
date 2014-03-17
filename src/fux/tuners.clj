@@ -1,5 +1,4 @@
-(ns fux.tuners
-  (:require [overtone.core :as ot]))
+(ns fux.tuners)
 
 
 
@@ -58,15 +57,3 @@
 
 
 (def pythags (vec (drop 5 (vec (flatten (vector (sort (flatten (map expand (pythagorean))))))))))
-
-
-
-
-
-; (def notes ["Eb" "Bb" "F" "C" "G" "D" "A" "E" "B" "F#" "C#" "G#"])
-; (zipmap notes (pythagorean))
-; (type pythags)
-; addressing by index:
-; (equaltemps 51)
-; (pythags 51)
-; (ot/midi->hz 60)

@@ -1,4 +1,10 @@
-(ns fux.parser)
+(ns fux.parser
+    (:require [clojure.java.io :as io]))
+
+(defn prep-kern [input-path]
+  (with-open [rdr (io/reader input-path)]
+    (->> (line-seq rdr)
+         (into [] ))))
 
 ; ==============
 ; comments extractor
