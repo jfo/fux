@@ -1,6 +1,5 @@
 (ns fux.demo
   (:require
-      [overtone.live :as ot]
       [fux.parser :as p]
       [fux.player :as pl]))
 
@@ -12,14 +11,52 @@
 
 ; play me!
 (pl/play-kern (p/parse-kern
-  (p/prep-kern "/Users/jeff/code/fux/resources/bach-chorales/159.krn")))
+  (p/prep-kern "/Users/jeff/code/fux/resources/bach-chorales/012.krn")))
 
-(ot/stop)
+
+(pprint (p/prep-kern "/Users/jeff/code/fux/resources/bach-chorales/012.krn"))
+
+(pprint  (p/parse-kern (p/prep-kern "/Users/jeff/code/fux/resources/bach-chorales/012.krn")))
+
+
+(pl/stop)
 
 
 ; debug me!
 (pl/play-kern (p/parse-kern
   (p/prep-kern "/Users/jeff/code/fux/resources/fugue1.krn")) 70)
+
+
+
+(def chorale
+ (p/prep-kern "/Users/jeff/code/fux/resources/bach-chorales/012.krn"))
+
+(pprint chorale)
+
+(p/extract-comments chorale)
+(p/strip-comments chorale)
+(pprint (p/split-spines chorale))
+(pprint (p/extract-spines chorale))
+
+(def test-spine (first (p/extract-spines chorale)))
+
+(pprint test-spine)
+
+(p/extract-spine-comments test-spine)
+(p/strip-spine-comments test-spine)
+
+(p/remove-null (p/strip-spine-comments test-spine))
+
+(def tokens (p/remove-measure (p/strip-spine-comments test-spine)))
+(pprint tokens)
+
+(p/spine-noter tokens)
+
+(p/add-offset (p/spine-noter tokens))
+
+
+
+
 
 
 ; nothing to see here...

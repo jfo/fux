@@ -1,7 +1,6 @@
 (ns fux.tuners)
 
 
-
 (defn lower [note]
     (if (< note 20.0)
           note
@@ -19,8 +18,6 @@
              (equaltemp (* a (Math/pow 2.0 (/ 1.0 12.0))) (cons a acc)))))
 
 (def equaltemps (equaltemp))
-
-
 
 ;------------------------------------
 ;       pythagorean tuning          |

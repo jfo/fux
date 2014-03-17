@@ -1,7 +1,11 @@
 (ns fux.player
   (:require
-            [overtone.live :as ot]
-            [fux.tuners :as tuner]))
+          [overtone.live :as ot]
+          [fux.tuners :as tuner]))
+
+
+(defn stop [] 
+  (ot/stop))
 
 (ot/definst sin-wave  [freq 0 attack 0 sustain 0 release 0 vol 0.1]
   (* (ot/env-gen (ot/lin attack sustain release) 0.1 1 0 1 ot/FREE)
