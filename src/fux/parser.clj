@@ -58,8 +58,30 @@
                nil 0
                "" 0
                "r" 0
+              "CCC" 24
+              "CCC#" 25
+              "CCC##" 26
+              "DDD-" 25
+              "DDD" 26
+              "DDD#" 27
+              "EEE-" 27
+              "EEE" 28
+              "EEE#" 29
+              "FFF" 29
+              "FFF#" 30
+              "FFF##" 31
+              "GGG-" 30
+              "GGG" 31
+              "GGG#" 32
+              "AAA-" 32
+              "AAA" 33
+              "AAA#" 34
+              "BBB-" 34
+              "BBB" 35
+              "BBB#" 36
               "CC" 36
               "CC#" 37
+              "CC##" 38
               "DD-" 37
               "DD" 38
               "DD#" 39
@@ -68,6 +90,7 @@
               "EE#" 41
               "FF" 41
               "FF#" 42
+              "FF##" 43
               "GG-" 42
               "GG" 43
               "GG#" 44
@@ -76,8 +99,10 @@
               "AA#" 46
               "BB-" 46
               "BB" 47
+              "BB#" 48
               "C" 48
               "C#" 49
+              "C##" 50
               "D-" 49
               "D" 50
               "D#" 51
@@ -86,6 +111,7 @@
               "E" 52
               "F" 53
               "F#" 54
+              "F##" 55
               "G-" 54
               "G" 55
               "G#" 56
@@ -94,8 +120,10 @@
               "A#" 58
               "B-" 58
               "B" 59
+              "B#" 60
               "c" 60
               "c#" 61
+              "c##" 62
               "d-" 61
               "d" 62
               "d#" 63
@@ -104,6 +132,7 @@
               "e#" 65
               "f" 65
               "f#" 66
+              "f##" 67
               "g-" 66
               "g" 67
               "g#" 68
@@ -112,8 +141,10 @@
               "a#" 70
               "b-" 70
               "b" 71
+              "b#" 72
               "cc" 72
               "cc#" 73
+              "cc##" 74
               "dd-" 73
               "dd" 74
               "dd#" 75
@@ -122,6 +153,7 @@
               "ee#" 77
               "ff" 77
               "ff#" 78
+              "ff##" 79
               "gg-" 78
               "gg" 79
               "gg#" 80
@@ -130,20 +162,37 @@
               "aa#" 82
               "bb-" 82
               "bb" 83
-              "ccc" 83})
+              "bb#" 84
+              "ccc" 84
+              "ccc#" 85
+              "ddd-" 85
+              "ddd" 86
+              "ddd#" 87
+              "eee-" 87
+              "eee" 88
+              "eee#" 89
+              "fff" 89
+              "fff#" 90
+              "ggg-" 90
+              "ggg" 91
+              "ggg#" 92
+              "aaa-" 92
+              "aaa" 93
+              "aaa#" 94
+              "bbb-" 94
+              "bbb" 95})
 
 (defn duration [token]
+  (let [token (first (clojure.string/split  token #"\s"))]
   (let [duration (clojure.string/join (re-seq #"[0-9.]" token))]
     (if (= \. (last duration))
       (* 6 (/ 1 (read-string duration)))
-      (* 4 (/ 1 (float (read-string duration)))))))
+      (* 4 (/ 1 (float (read-string duration))))))))
 
 
 (defn note [token]
-  (if (= \= (first token))
-    nil
-    (do
-      (clojure.string/join (re-seq #"[A-Ga-g#-]" token)))))
+  (let [token (first (clojure.string/split  token #"\s"))]
+    (clojure.string/join (re-seq #"[A-Ga-g#-]" token))))
 
 
 (defn spine-noter [tokens]
@@ -154,6 +203,7 @@
           :note (note token)
           :notecode (note-map (note token))}
          token))))
+
 
 (defn add-offset [spine]
   (rest

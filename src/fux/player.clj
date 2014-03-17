@@ -7,9 +7,9 @@
 (defn stop [] 
   (ot/stop))
 
-(ot/definst sin-wave  [freq 0 attack 0 sustain 0 release 0 vol 0.1]
+(ot/definst sin-wave  [freq 0 attack 0 sustain 0 release 0 vol 0.6]
   (* (ot/env-gen (ot/lin attack sustain release) 0.1 1 0 1 ot/FREE)
-     (ot/sin-osc freq)
+     (ot/sin-osc (/ freq 2))
      vol))
 
 ; now i need a function that, given a metronome marking and an amount of note offset (quarter note = 1) defines an absolute time
@@ -22,7 +22,8 @@
             (sin-wave ((tuner/equaltemp) note)
                       0
                       duration
-                      0)))
+                      0
+                      0.1)))
 
 ; now I just need to apply that to all the notes in a spine.
 (defn schedule-spine [spine now mm]

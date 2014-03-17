@@ -3,23 +3,24 @@
       [fux.parser :as p]
       [fux.player :as pl]))
 
-
 (use 'clojure.pprint)
-
-(pprint (p/parse-kern (p/prep-kern "/Users/jeff/code/fux/resources/bach-chorales/146.krn")))
-
 
 ; play me!
 (pl/play-kern (p/parse-kern
-  (p/prep-kern "/Users/jeff/code/fux/resources/bach-chorales/012.krn")))
+  (p/prep-kern "/Users/jeff/code/fux/resources/bach-chorales/058.krn")) 100)
 
+(pl/play-kern (p/parse-kern
+  (p/prep-kern "/Users/jeff/code/fux/resources/wtc1f04.krn")) 300)
 
-(pprint (p/prep-kern "/Users/jeff/code/fux/resources/bach-chorales/012.krn"))
+(pprint (p/parse-kern
+  (p/prep-kern "/Users/jeff/code/fux/resources/wtc1f04.krn")))
 
-(pprint  (p/parse-kern (p/prep-kern "/Users/jeff/code/fux/resources/bach-chorales/012.krn")))
-
+(pprint (p/parse-kern (p/prep-kern "/Users/jeff/code/fux/resources/haydn/op01n2-01.krn")))
 
 (pl/stop)
+
+
+
 
 
 ; debug me!
@@ -27,10 +28,8 @@
   (p/prep-kern "/Users/jeff/code/fux/resources/fugue1.krn")) 70)
 
 
-
 (def chorale
  (p/prep-kern "/Users/jeff/code/fux/resources/bach-chorales/012.krn"))
-
 (pprint chorale)
 
 (p/extract-comments chorale)
@@ -49,11 +48,8 @@
 
 (def tokens (p/remove-measure (p/strip-spine-comments test-spine)))
 (pprint tokens)
-
 (p/spine-noter tokens)
-
 (p/add-offset (p/spine-noter tokens))
-
 
 
 
