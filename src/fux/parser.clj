@@ -55,8 +55,10 @@
   (remove #(= \= (first %)) spine))
 
 (def note-map {
-               "." 0 nil 0
+               "." 0 
+               nil 0
                "" 0
+               "r" 0
               "CC" 36
               "CC#" 37
               "DD-" 37
@@ -145,6 +147,7 @@
                        ((first acc) :offset)))))
         '({:offset 0 :duration 0})
         spine))))
+
 
 (defn note [token]
   (if (= \= (first token))

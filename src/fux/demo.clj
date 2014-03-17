@@ -1,19 +1,25 @@
 (ns fux.demo
   (:require
+      [overtone.live :as ot]
       [fux.parser :as p]
       [fux.player :as pl]))
 
 
-
 (use 'clojure.pprint)
 
-(pprint (p/parse-kern (p/prep-kern "/Users/jeff/code/fux/resources/bach-chorales/126.krn")))
+(pprint (p/parse-kern (p/prep-kern "/Users/jeff/code/fux/resources/bach-chorales/146.krn")))
 
 
 ; play me!
 (pl/play-kern (p/parse-kern
-  (p/prep-kern "/Users/jeff/code/fux/resources/bach-chorales/056.krn")))
+  (p/prep-kern "/Users/jeff/code/fux/resources/bach-chorales/159.krn")))
 
+(ot/stop)
+
+
+; debug me!
+(pl/play-kern (p/parse-kern
+  (p/prep-kern "/Users/jeff/code/fux/resources/fugue1.krn")) 70)
 
 
 ; nothing to see here...
