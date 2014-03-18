@@ -184,25 +184,26 @@
 
 (defn duration [token]
   (let [token (first (clojure.string/split  token #"\s"))]
-  (let [duration (clojure.string/join (re-seq #"[0-9.]" token))]
-    (if (= \. (last duration))
-      (* 6 (/ 1 (read-string duration)))
-      (* 4 (/ 1 (float (read-string duration))))))))
+  (let [dur (clojure.string/join (re-seq #"[0-9.]" token ))]
+      (if (= \. (last dur))
+        (* 6 (/ 1 (read-string dur)))
+        (* 4 (/ 1 (float (read-string dur))))))))
 
 
 (defn note [token]
   (let [token (first (clojure.string/split  token #"\s"))]
-    (clojure.string/join (re-seq #"[A-Ga-g#-]" token))))
+    (clojure.string/join (re-seq #"[rA-Ga-g#-]" token))))
 
 
 (defn spine-noter [tokens]
+  (let [tokens (remove-null tokens)]
    (into []
      (for [token tokens]
        (if (not= \= (first token))
          {:duration (duration token)
           :note (note token)
           :notecode (note-map (note token))}
-         token))))
+         token)))))
 
 
 (defn add-offset [spine]

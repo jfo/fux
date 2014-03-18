@@ -8,8 +8,8 @@
   (ot/stop))
 
 (ot/definst sin-wave  [freq 0 attack 0 sustain 0 release 0 vol 0.6]
-  (* (ot/env-gen (ot/lin attack sustain release) 0.1 1 0 1 ot/FREE)
-     (ot/sin-osc (/ freq 2))
+  (* (ot/env-gen (ot/lin attack sustain release) 1 1 0 1 ot/FREE)
+     (ot/sin-osc freq)
      vol))
 
 ; now i need a function that, given a metronome marking and an amount of note offset (quarter note = 1) defines an absolute time

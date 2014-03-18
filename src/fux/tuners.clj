@@ -42,6 +42,7 @@
 
 (defn pythagorean
     ([] (pythagorean 440.0 (vector)))
+    ([a] (pythagorean a (vector)))
     ([a acc]
          (flatten (cons (pythagorean-down a) (cons (pythagorean-up a) acc)))))
 
