@@ -10,6 +10,8 @@
 (pl/play-kern (p/parse-kern
   (p/prep-kern "/Users/jeff/code/fux/resources/bach-chorales/095.krn")) 100)
 
+(pl/play-kern (p/parse-kern
+  (p/prep-kern "/Users/jeff/code/fux/resources/mysterium.krn")) 100)
 
 (pl/play-kern (p/parse-kern
   (p/prep-kern "/Users/jeff/code/fux/resources/wtc1f04.krn")) 200)
