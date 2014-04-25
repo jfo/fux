@@ -36,7 +36,6 @@
         acc
         ; (conj (tokenize-spine spines) acc))))
         (recur (map rest spines) (conj acc (tokenize-spine spines))))))
-; ))
 
 ; ==============
 ; spines parser
